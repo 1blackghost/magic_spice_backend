@@ -11,9 +11,7 @@ def find_valid_part(s):
                 return substring
     return s
 
-
 def get_cart(request):
-    user = request.session.get("user")
     try:
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
@@ -34,7 +32,7 @@ def cart(request, value, qu):
         qu = int(qu)
         
         if qu > 0:
-            product = ProductDB.objects.get(code=str(value))
+            product = ProductDB.objects.get(name=str(value))
             p = qu * int(product.price)  
             cart.add_item(item_name=product.name, quantity=qu, price=p)
             cart.save()

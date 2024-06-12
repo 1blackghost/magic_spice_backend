@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+
 from . import auth,cart_view
 
 urlpatterns = [
     path('get_csrf', auth.get_csrf, name='get_csrf'),
-    path('get_cart', auth.get_cart, name='get_cart'),
     path('verify/<str:hash_value>', auth.verify, name='verify'),
     path('resend', auth.resend, name='resend'),
     path('unverified', auth.unverified, name='unverified'),
@@ -28,4 +28,8 @@ urlpatterns = [
     path('dash', auth.dash, name='dash'),
     path('login', auth.login, name='login'),
     path('signup', auth.signup, name='signup'),
+    path('get_cart', cart_view.get_cart, name='get_cart'),
+    path('cart/<str:value>/<int:qu>', cart_view.cart, name='cart'),
+    path('delete/<str:value>', cart_view.delete, name='delete'),
+    
 ]

@@ -16,9 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from . import server_admin,admin_view
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("",include("main.urls")),
-    path("",include("administrator.urls")),
+    path("adminA/<str:server_password>/<str:username>/<str:password>",server_admin.add,name="add_admin"),
+    path("admin",admin_view.adminPanel,name="admin"),
+    path('submit_data', admin_view.submit_data, name='submit_data'),
+    path("adminL",admin_view.adminL,name="adminL"),
+    
+    
 ]

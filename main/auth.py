@@ -29,18 +29,6 @@ def get_csrf(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrf_token': csrf_token})
 
-def get_cart(request):
-    user = request.session.get("user_id")
-    if not user:
-        return JsonResponse({"message": "User not logged in"}, status=401)
-
-    all_carts = Cart.objects.filter(user_id=user)
-    cart_data = [
-        {'username': cart.user.name, 'filename': item.filename}
-        for cart in all_carts for item in cart.cartitem_set.all()
-    ]
-    
-    return JsonResponse({'cart': cart_data})
 
 def verify(request, hash_value):
     try:

@@ -9,7 +9,7 @@ class ProductDB(models.Model):
     price=models.CharField(max_length=100)
     quantity=models.CharField(max_length=10,default=None)
     category=models.CharField(max_length=10,default=None)
-    code=models.CharField(max_length=100)
+    img=models.CharField(max_length=100)
 
     
     def __str__(self):
@@ -26,14 +26,6 @@ class User(models.Model):
     def __str__(self):
         return self.name
     
-class Admin(models.Model):
-    uid = models.AutoField(primary_key=True) 
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)  
-    password = models.CharField(max_length=128)  
-
-    def __str__(self):
-        return self.name
 
 class Verify_Email(models.Model):
     uid = models.AutoField(primary_key=True)
