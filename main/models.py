@@ -17,7 +17,9 @@ class ProductDB(models.Model):
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True) 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,unique=False)
+    
+    
     email = models.EmailField(unique=True)  
     password = models.CharField(max_length=128)  
     email_verified = models.BooleanField(default=False)  #

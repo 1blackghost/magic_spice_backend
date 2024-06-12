@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     "channels",
     "administrator",
+    "rest_framework",
 ]
 
 
@@ -51,7 +52,10 @@ CORS_ALLOWED_ORIGINS = [
 
 ]
 
+REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": [
+    "rest_framework.permissions.AllowAny"]}
 
+CORS_ORIGIN_ALLOW_ALL = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
