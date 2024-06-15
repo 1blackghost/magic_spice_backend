@@ -8,6 +8,7 @@ from .models import User, Verify_Email, Cart,CartItem
 from . import helper
 import time
 from django.views.decorators.csrf import csrf_protect
+import json
 
 
 def dash(request):
@@ -114,12 +115,12 @@ def logout(request):
         return JsonResponse({"message": "No account found"}, status=400)
 
 
-@csrf_protect
+@csrf_exempt
 def login(request):
     if request.method == "POST":
-        email = request.POST.get('email')
-    
-        password = request.POST.get('password')
+        data=json.loads(request.body)
+        email = data.get('email')
+        password = data.get('password')
         try:
             user = User.objects.get(email=email)
             if check_password(password, user.password):
@@ -137,12 +138,14 @@ def login(request):
             return JsonResponse({"message": "User does not exist"}, status=404)
         except Exception as e:
             return JsonResponse({"message": "Something went wrong:("}, status=500)
-@csrf_protect
+@csrf_exempt
 def signup(request):
     if request.method == "POST":
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        print("CSRF Token from request headers:", request.META.get('HTTP_X_CSRFTOKEN'))
+        data=json.loads(request.body)
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
 
         
         additional_params = request.POST.get('additional_params')
