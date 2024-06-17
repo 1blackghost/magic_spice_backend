@@ -9,6 +9,7 @@ from . import helper
 import time
 from django.views.decorators.csrf import csrf_protect
 import json
+from . import  custom_settings
 
 
 def dash(request):
@@ -28,6 +29,8 @@ def dash(request):
 
 def get_csrf(request):
     csrf_token = get_token(request)
+    request.session["csrf"]=str(csrf_token)
+    request.session.save()
     return JsonResponse({'csrf_token': csrf_token})
 
 
@@ -118,41 +121,59 @@ def logout(request):
 @csrf_exempt
 def login(request):
     if request.method == "POST":
-        data=json.loads(request.body)
-        email = data.get('email')
-        password = data.get('password')
-        try:
-            user = User.objects.get(email=email)
-            if check_password(password, user.password):
-                if user.email_verified:
-                    request.session["user_id"] = user.uid
-                    return JsonResponse({"message": "success"}, status=200)
+        origin = request.META.get('HTTP_ORIGIN')
+        csrf=request.META.get('HTTP_X_CSRFTOKEN')
+        saved_csrf=request.session.get("csrf")
+        print(saved_csrf)
+
+        if origin in custom_settings.origins and str(saved_csrf)==str(csrf):
+
+            data=json.loads(request.body)
+            email = data.get('email')
+            password = data.get('password')
+            try:
+                user = User.objects.get(email=email)
+                if check_password(password, user.password):
+                    if user.email_verified:
+                        request.session["user_id"] = user.uid
+                        return JsonResponse({"message": "success"}, status=200)
+                    else:
+                        request.session["user_id"] = user.uid
+                        request.session["verification_started"] = True
+                        request.session["email"] = user.email
+                        return JsonResponse({"message": "verify"}, status=200)
                 else:
-                    request.session["user_id"] = user.uid
-                    request.session["verification_started"] = True
-                    request.session["email"] = user.email
-                    return JsonResponse({"message": "verify"}, status=200)
-            else:
-                return JsonResponse({"message": "Incorrect password"}, status=401)
-        except User.DoesNotExist:
-            return JsonResponse({"message": "User does not exist"}, status=404)
-        except Exception as e:
-            return JsonResponse({"message": "Something went wrong:("}, status=500)
+                    return JsonResponse({"message": "Incorrect password"}, status=401)
+            except User.DoesNotExist:
+                return JsonResponse({"message": "User does not exist"}, status=404)
+            except Exception as e:
+                return JsonResponse({"message": "Something went wrong:("}, status=500)
+        else:
+            return JsonResponse({"message":"Forbidden"},status=403)
+
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
-        print("CSRF Token from request headers:", request.META.get('HTTP_X_CSRFTOKEN'))
-        data=json.loads(request.body)
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
+        origin = request.META.get('HTTP_ORIGIN')
+        csrf=request.META.get('HTTP_X_CSRFTOKEN')
+        saved_csrf=request.session.get("csrf")
 
-        
-        additional_params = request.POST.get('additional_params')
-        try:
-            new_user = User(name=name, email=email, password=make_password(password), additional_params=additional_params)
-            new_user.save()
-            return JsonResponse({'message': 'success'}, status=200)
-        except Exception as e:
-            print(str(e))
-            return JsonResponse({"message": "Something went wrong:("}, status=500)
+        print(saved_csrf)
+        if origin in custom_settings.origins and str(saved_csrf)==str(csrf):
+            
+            data=json.loads(request.body)
+            name = data.get('name')
+            email = data.get('email')
+            password = data.get('password')
+
+            
+            additional_params = request.POST.get('additional_params')
+            try:
+                new_user = User(name=name, email=email, password=make_password(password), additional_params=additional_params)
+                new_user.save()
+                return JsonResponse({'message': 'success'}, status=200)
+            except Exception as e:
+                print(str(e))
+                return JsonResponse({"message": "Something went wrong:("}, status=500)
+        else:
+            return JsonResponse({"message":"Forbidden"},status=403)
