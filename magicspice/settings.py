@@ -81,6 +81,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'magicspice.wsgi.application'
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 SESSION_SAVE_EVERY_REQUEST = True

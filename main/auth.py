@@ -126,7 +126,7 @@ def login(request):
         saved_csrf=request.session.get("csrf")
         print(saved_csrf)
 
-        if origin in custom_settings.origins and str(saved_csrf)==str(csrf):
+        if origin in custom_settings.origins:
 
             data=json.loads(request.body)
             email = data.get('email')
@@ -159,18 +159,18 @@ def signup(request):
         saved_csrf=request.session.get("csrf")
 
         print(saved_csrf)
-        if origin in custom_settings.origins and str(saved_csrf)==str(csrf):
+        if origin in custom_settings.origins:
             
             data=json.loads(request.body)
             name = data.get('name')
             email = data.get('email')
             password = data.get('password')
-
             
             additional_params = request.POST.get('additional_params')
             try:
                 new_user = User(name=name, email=email, password=make_password(password), additional_params=additional_params)
                 new_user.save()
+                print("Success account created!")
                 return JsonResponse({'message': 'success'}, status=200)
             except Exception as e:
                 print(str(e))
