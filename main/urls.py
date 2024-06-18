@@ -31,5 +31,7 @@ urlpatterns = [
     path('get_cart', cart_view.get_cart, name='get_cart'),
     path('cart/<str:value>/<int:qu>', cart_view.cart, name='cart'),
     path('delete/<str:value>', cart_view.delete, name='delete'),
+    path("getaddr",cart_view.get_addr,name="getaddr"),
+    path("setaddr/<str:addr>",cart_view.set_addr,name="setaddr")
     
 ]

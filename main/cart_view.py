@@ -2,6 +2,20 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Cart, CartItem,ProductDB,User
 
+
+def set_addr(request,addr):
+    uid=request.session.get("user_id")
+    user=User.objects.get(uid=uid)
+    user.address=addr
+    user.save()
+    return JsonResponse({"message":"Save successful"},status=200)
+
+def get_addr(request):
+    uid=request.session.get("user_id")
+    user=User.objects.get(uid=uid)
+    address=user.address
+    return JsonResponse({"address":str(address)},status=200)
+    
 def find_valid_part(s):
     n = len(s)
     for i in range(1, n // 2 + 1):

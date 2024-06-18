@@ -22,7 +22,8 @@ class User(models.Model):
     
     email = models.EmailField(unique=True)  
     password = models.CharField(max_length=128)  
-    email_verified = models.BooleanField(default=False)  #
+    email_verified = models.BooleanField(default=False) 
+    address=models.TextField(default=None,null=True)
     additional_params = models.TextField(blank=True, null=True) 
 
     def __str__(self):
