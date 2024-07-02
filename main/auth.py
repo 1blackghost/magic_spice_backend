@@ -11,7 +11,6 @@ from django.views.decorators.csrf import csrf_protect
 import json
 from . import  custom_settings
 
-url="127.0.0.1:8000/"
 
 def dash(request):
     if request.session.get("user_id"):
@@ -68,7 +67,7 @@ def resend(request):
             verify_email, created = Verify_Email.objects.get_or_create(email=user.email)
             
             verify_email.generate_unique_hash()
-            send_verification_email(user.email, url+verify_email.hash)
+            send_verification_email(user.email, verify_email.hash)
             
             return JsonResponse({"message": "Verification email sent"}, status=200)
         else:
@@ -93,7 +92,7 @@ def unverified(request):
         if not request.session.get("last_request_time"):
             verify_email, created = Verify_Email.objects.get_or_create(email=user.email)
             verify_email.generate_unique_hash()
-            send_verification_email(user.email, url+verify_email.hash)
+            send_verification_email(user.email, verify_email.hash)
         
         request.session["last_request_time"] = current_time
         formatted_email = format_email(user.email)
