@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 
-from . import auth,cart_view
+from . import auth,cart_view,payment_view,order_view
 
 urlpatterns = [
     path('get_csrf', auth.get_csrf, name='get_csrf'),
@@ -32,6 +32,12 @@ urlpatterns = [
     path('cart/<str:value>/<int:qu>', cart_view.cart, name='cart'),
     path('delete/<str:value>', cart_view.delete, name='delete'),
     path("getaddr",cart_view.get_addr,name="getaddr"),
-    path("setaddr/<str:addr>",cart_view.set_addr,name="setaddr")
+    path("setaddr/<str:addr>",cart_view.set_addr,name="setaddr"),
+    path("products",cart_view.get_all_products,name="products"),
+    path('getAmount', payment_view.getAmount, name='get_amount'),
+    path('paymenthandler', payment_view.paymenthandler, name='payment_handler'),
+    path('user_orders', order_view.user_orders, name='user_orders'),
+    path('all_orders', order_view.all_orders, name='all_orders'),
+    path('cancel/<int:order_id>', order_view.cancel_order, name='cancel_order'),
     
 ]

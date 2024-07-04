@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Cart, CartItem,ProductDB,User
 
+def get_all_products(request):
+    products = ProductDB.objects.all().values()  
+    products_list = list(products)  
+    return JsonResponse(products_list, safe=False)
 
 def set_addr(request,addr):
     uid=request.session.get("user_id")
