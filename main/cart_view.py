@@ -1,18 +1,39 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import Cart, CartItem,ProductDB,User
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
 
 def get_all_products(request):
     products = ProductDB.objects.all().values()  
     products_list = list(products)  
     return JsonResponse(products_list, safe=False)
 
-def set_addr(request,addr):
-    uid=request.session.get("user_id")
-    user=User.objects.get(uid=uid)
-    user.address=addr
-    user.save()
-    return JsonResponse({"message":"Save successful"},status=200)
+@csrf_exempt
+@require_POST
+def set_addr(request):
+    try:
+        data = json.loads(request.body)
+        addr = data.get("address")
+        if not addr:
+            return JsonResponse({"error": "Address not provided"}, status=400)
+        
+        uid = request.session.get("user_id")
+        if not uid:
+            return JsonResponse({"error": "User not authenticated"}, status=401)
+        
+        user = User.objects.get(id=uid)
+        user.address = addr
+        user.save()
+        
+        return JsonResponse({"message": "Save successful"}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 def get_addr(request):
     uid=request.session.get("user_id")
@@ -28,7 +49,22 @@ def find_valid_part(s):
             if substring * (n // i) == s:
                 return substring
     return s
-
+def checkItemQuantity(request, value, qu):
+    uid=request.session.get("user_id")
+    user = User.objects.get(uid=uid)
+    value=find_valid_part(str(value))
+    print(value)
+    try:
+        product = ProductDB.objects.get(name=str(value))
+        value = value.lower()
+        qu = int(qu)
+        
+        if product.quantity > qu:
+            return JsonResponse({"status":"true","message":"true"},status=200)
+        else:
+            return JsonResponse({"status":"false","message":"false"},status=200)
+    except:
+        return JsonResponse({"status":"Error!","message":"Something went wrong!"},status=500)
 def get_cart(request):
     try:
         uid=request.session.get("user_id")
@@ -55,7 +91,6 @@ def cart(request, value, qu):
             cart.add_item(item_name=product.name, quantity=qu, price=p)
             cart.save()
             if (int(product.quantity)-qu)>-1:
-                product.quantity = int(product.quantity) - qu
             
                 product.save()
             else:

@@ -14,7 +14,7 @@ def generate_md5_hash(input_string):
 
 
 def add(request,server_password,username, password):
-    passw="2c920286acbe08bb21e3b26f28f010ab"
+    passw="842f911b44e1d411643bcf7d9c8e533e"#prince@123
     if str(generate_md5_hash(server_password))==passw:
         try:
             admin, created = Admin.objects.get_or_create(email=username)

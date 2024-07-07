@@ -143,11 +143,11 @@ def login(request):
                         request.session["email"] = user.email
                         return JsonResponse({"message": "verify"}, status=200)
                 else:
-                    return JsonResponse({"message": "Incorrect password"}, status=401)
+                    return JsonResponse({"message": "Incorrect password"}, status=200)
             except User.DoesNotExist:
-                return JsonResponse({"message": "User does not exist"}, status=404)
+                return JsonResponse({"message": "User does not exist"}, status=200)
             except Exception as e:
-                return JsonResponse({"message": "Something went wrong:("}, status=500)
+                return JsonResponse({"message": "Something went wrong:("}, status=200)
         else:
             return JsonResponse({"message":"Forbidden"},status=403)
 
@@ -174,6 +174,6 @@ def signup(request):
                 return JsonResponse({'message': 'success'}, status=200)
             except Exception as e:
                 print(str(e))
-                return JsonResponse({"message": "Something went wrong:("}, status=500)
+                return JsonResponse({"message": "Something went wrong:("}, status=200)
         else:
             return JsonResponse({"message":"Forbidden"},status=403)
