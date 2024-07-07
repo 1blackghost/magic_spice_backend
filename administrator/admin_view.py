@@ -23,6 +23,7 @@ def submit_data(request):
             category = request.POST.get('category')
             price = request.POST.get('price')
             img = request.POST.get('img')
+            description=request.POST.get("description")
             
             try:
                 existing_product = ProductDB.objects.get(name=name)
@@ -30,11 +31,12 @@ def submit_data(request):
                 existing_product.quantity = quantity
                 existing_product.category = category
                 existing_product.price = price
-                existing_product.img=img,
+                existing_product.img=img
+                existing_product.description=description
                 existing_product.save()
                 return JsonResponse({'success': True})
             except ProductDB.DoesNotExist:
-                new_product = ProductDB(name=name, quantity=quantity, category=category, price=price, img=img)
+                new_product = ProductDB(name=name, quantity=quantity, category=category, price=price, img=img,description=description)
                 new_product.save()
                 return JsonResponse({'success': True})
         else:

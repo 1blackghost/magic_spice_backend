@@ -39,5 +39,7 @@ urlpatterns = [
     path('user_orders', order_view.user_orders, name='user_orders'),
     path('all_orders', order_view.all_orders, name='all_orders'),
     path('cancel/<int:order_id>', order_view.cancel_order, name='cancel_order'),
+    path('product/<int:product_id>', cart_view.get_product, name='get_product'),
+
     
 ]

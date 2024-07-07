@@ -4,6 +4,27 @@ from .models import Cart, CartItem,ProductDB,User
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+from django.shortcuts import get_object_or_404
+
+
+def get_product(request, product_id):
+    try:
+        product = get_object_or_404(ProductDB, id=product_id)
+        
+        product_data = {
+            "id": product.id,
+            "name": product.name,
+            "price": product.price,
+            "quantity": product.quantity,
+            "category": product.category,
+            "img": product.img,
+            "description": product.description,
+        }
+        
+        return JsonResponse(product_data)
+    except:
+        return JsonResponse({"status":"ok","message":"Item maynot be found"},status=200)
+
 
 def get_all_products(request):
     products = ProductDB.objects.all().values()  

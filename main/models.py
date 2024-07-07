@@ -10,6 +10,8 @@ class ProductDB(models.Model):
     quantity=models.CharField(max_length=10,default=None)
     category=models.CharField(max_length=10,default=None)
     img=models.CharField(max_length=100)
+    description=models.CharField(max_length=1000,default="No Description")
+
 
     
     def __str__(self):
