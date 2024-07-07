@@ -24,7 +24,7 @@ def dash(request):
         }
         return JsonResponse(context)
     else:
-        return JsonResponse({"message": "User not logged in"}, status=401)
+        return JsonResponse({"message": "User not logged in"}, status=200)
 
 
 def get_csrf(request):

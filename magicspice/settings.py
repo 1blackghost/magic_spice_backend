@@ -86,7 +86,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 SESSION_SAVE_EVERY_REQUEST = True
 CSRF_USE_SESSIONS = True  
-
+CORS_ALLOW_CREDENTIALS = True
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
