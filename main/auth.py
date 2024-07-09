@@ -10,7 +10,7 @@ import time
 from django.views.decorators.csrf import csrf_protect
 import json
 from . import  custom_settings
-
+from django.shortcuts import render
 
 def dash(request):
     if request.session.get("user_id"):
@@ -45,7 +45,8 @@ def verify(request, hash_value):
         verify_email.delete()
         Cart.objects.create(user=user)
 
-        return JsonResponse({"message": "Verification completed!"}, status=200)
+
+        return render(request, 'index.html')
     except Verify_Email.DoesNotExist:
         return JsonResponse({"message": "Invalid verification link"}, status=400)
 
@@ -103,7 +104,7 @@ def unverified(request):
 
 def format_email(email):
     local_part, domain = email.split("@")
-    obscured_local_part = local_part[0] + "*" * (len(local_part) - 1)
+    obscured_local_part = local_part[0] + local_part[1]+"*" * (len(local_part) - 4)+local_part[-1]+local_part[-2]
     return f"{obscured_local_part}@{domain}"
 
 def send_verification_email(email, hash_value):
