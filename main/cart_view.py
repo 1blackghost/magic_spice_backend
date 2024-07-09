@@ -44,7 +44,7 @@ def set_addr(request):
         if not uid:
             return JsonResponse({"error": "User not authenticated"}, status=401)
         
-        user = User.objects.get(id=uid)
+        user = User.objects.get(uid=uid)
         user.address = addr
         user.save()
         
