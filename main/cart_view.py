@@ -109,7 +109,7 @@ def cart(request, value, qu):
         if qu > 0:
             product = ProductDB.objects.get(name=str(value))
             p = qu * int(product.price)  
-            cart.add_item(item_name=product.name, quantity=qu, price=p)
+            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img)
             cart.save()
             if (int(product.quantity)-qu)>-1:
             

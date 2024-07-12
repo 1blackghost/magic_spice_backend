@@ -76,6 +76,7 @@ class CartItem(models.Model):
     item = models.CharField(max_length=100)
     quantity = models.IntegerField(default=1)
     price = models.IntegerField(default=0)
+    img=models.CharField(max_length=100,null=True)
 
     def __str__(self):
         return f"{self.quantity} x {self.item} in cart for {self.cart.user.username}"
