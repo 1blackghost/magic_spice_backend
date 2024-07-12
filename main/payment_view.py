@@ -69,7 +69,7 @@ def paymenthandler(request):
                 total_amount = sum(item.price for item in cart_items)
                 array=[]
                 for item in cart_items:
-                    array.append([item.item,item.price,item.img])
+                    array.append([item.item,item.price,item.img,item.quantity])
                 order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address)
                 order.save()
                 cart_items.delete()
