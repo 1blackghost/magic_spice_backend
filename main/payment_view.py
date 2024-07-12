@@ -63,20 +63,22 @@ def paymenthandler(request):
 
             if result is not None:
                 user_id = request.session.get("user_id")
-                user = User.objects.get(pk=user_id)  # Fetching the User instance
+                user = User.objects.get(pk=user_id) 
 
                 cart_items = CartItem.objects.filter(cart__user=user)
                 total_amount = sum(item.price for item in cart_items)
-
-                order = Order.objects.create(user=user, total_amount=total_amount)
+                array=[]
                 for item in cart_items:
-                    order.items.add(item)  
+                    array.append([item.item,item.price,item.img])
+                order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address)
+                order.save()
                 cart_items.delete()
 
                 return JsonResponse({"message": "Payment completed and order placed successfully!"}, status=200)
             else:
                 return JsonResponse({"message": "Payment signature verification failed!"}, status=400)
         except Exception as e:
+            print(str(e))
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)

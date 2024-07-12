@@ -80,12 +80,15 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.item} in cart for {self.cart.user.username}"
+    
 class Order(models.Model):
     order_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem, related_name='orders')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
+    items=models.CharField(max_length=1000)
+    address=models.CharField(max_length=100)
 
     def __str__(self):
         return f"Order {self.order_id} by {self.user.name}"
