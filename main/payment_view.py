@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from .models import CartItem,Order
 import json
 from decouple import config
+from .models import Cart, CartItem,ProductDB,User
+
 
 RAZOR_KEY_ID = config('RAZORPAY_KEY_ID')
 RAZOR_CLIENT_SECRET = config('RAZORPAY_CLIENT_SECRET')
@@ -46,13 +48,11 @@ def delete_all_items(user):
 def paymenthandler(request):
     if request.method == "POST":
         try:
-
-            data=json.loads(request.body)
+            data = json.loads(request.body)
             signature = data.get('razorpay_signature')
             razorpay_order_id = data.get('razorpay_order_id')
             payment_id = data.get('razorpay_payment_id')
             
-
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': payment_id,
@@ -62,7 +62,9 @@ def paymenthandler(request):
             result = razorpay_client.utility.verify_payment_signature(params_dict)
 
             if result is not None:
-                user = request.session.get("user_id")
+                user_id = request.session.get("user_id")
+                user = User.objects.get(pk=user_id)  # Fetching the User instance
+
                 cart_items = CartItem.objects.filter(cart__user=user)
                 total_amount = sum(item.price for item in cart_items)
 
