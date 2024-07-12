@@ -2,7 +2,7 @@ import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import CartItem,Order
-
+import json
 from decouple import config
 
 RAZOR_KEY_ID = config('RAZORPAY_KEY_ID')
@@ -46,9 +46,12 @@ def delete_all_items(user):
 def paymenthandler(request):
     if request.method == "POST":
         try:
-            payment_id = request.POST.get('razorpay_payment_id', '')
-            razorpay_order_id = request.POST.get('razorpay_order_id', '')
-            signature = request.POST.get('razorpay_signature', '')
+
+            data=json.loads(request.body)
+            signature = data.get('razorpay_signature')
+            razorpay_order_id = data.get('razorpay_order_id')
+            payment_id = data.get('razorpay_payment_id')
+            
 
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
