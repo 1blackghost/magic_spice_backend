@@ -52,7 +52,7 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart for {self.user.username}"
 
-    def add_item(self, item_name, quantity,price):
+    def add_item(self, item_name, quantity,price,img):
         existing_item = self.cartitem_set.filter(item=item_name).first()
 
         if existing_item:
@@ -60,7 +60,7 @@ class Cart(models.Model):
             existing_item.price += price 
             existing_item.save()
         else:
-            CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price)
+            CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img)
 
     def remove_item(self, item_name):
         self.cartitem_set.filter(item=item_name).delete()
