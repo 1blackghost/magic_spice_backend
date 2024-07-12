@@ -91,7 +91,7 @@ def get_cart(request):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart_items = CartItem.objects.filter(cart__user=user)
-        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price} for item in cart_items]
+        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img} for item in cart_items]
         return JsonResponse({'cart': cart_data})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
