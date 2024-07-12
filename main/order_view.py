@@ -4,7 +4,23 @@ from .models import Order
 from .models import Order, CancellationRequest
 from django.shortcuts import get_object_or_404
 from .models import Cart, CartItem,ProductDB,User,Order
+import razorpay
+from decouple import config
 
+
+RAZOR_KEY_ID = config('RAZORPAY_KEY_ID')
+RAZOR_CLIENT_SECRET = config('RAZORPAY_CLIENT_SECRET')
+
+
+razorpay_client = razorpay.Client(
+	auth=(RAZOR_KEY_ID, RAZOR_CLIENT_SECRET))
+
+def refund_payment(payment_id, amount):
+    try:
+        refund = razorpay_client.payment.refund(payment_id, amount)
+        return refund
+    except razorpay.errors.BadRequestError as e:
+        return {"error": str(e)}
 
 @csrf_exempt
 def user_orders(request):
@@ -26,6 +42,8 @@ def user_orders(request):
                     "total_amount": order.total_amount,
                     "items": order.items,
                     "address":order.address,
+                    "order_status":order.order_status,
+
                 }
                 orders_data.append(order_data)
 
@@ -54,6 +72,7 @@ def all_orders(request):
                     "total_amount": order.total_amount,
                     "items": order.items,
                     "address":order.address,
+                    "order_status":order.order_status,
                 }
                 orders_data.append(order_data)
 
@@ -65,19 +84,16 @@ def all_orders(request):
     
 @csrf_exempt
 def cancel_order(request, order_id):
-    if request.method == "POST":
-        user = request.session.get("user")
-        order = get_object_or_404(Order, order_id=order_id, user=user)
+    user = request.session.get("user")
+    order = get_object_or_404(Order, order_id=order_id, user=user)
+    refund_payment(order.payment_id,order.total_amount)
+    order.order_status="Canceled"
+    order.save()
+    try:
+        cancellation_request = CancellationRequest(order=order, reason="Customer requested cancellation")
+        cancellation_request.save()
 
-        try:
-            cancellation_request = CancellationRequest(order=order, reason="Customer requested cancellation")
-            cancellation_request.save()
 
-            order.delete()
-
-            return JsonResponse({"message": f"Order {order_id} cancelled successfully."}, status=200)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return JsonResponse({"message": f"Order {order_id} cancelled successfully."}, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

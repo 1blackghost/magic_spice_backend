@@ -14,7 +14,16 @@ RAZOR_CLIENT_SECRET = config('RAZORPAY_CLIENT_SECRET')
 razorpay_client = razorpay.Client(
 	auth=(RAZOR_KEY_ID, RAZOR_CLIENT_SECRET))
 
+def refund_payment(payment_id, amount):
+    try:
+        refund = razorpay_client.payment.refund(payment_id, amount)
+        return refund
+    except razorpay.errors.BadRequestError as e:
+        return {"error": str(e)}
+
+
 def getAmount(request):
+    
     user=request.session.get("user_id")
     cart_items = CartItem.objects.filter(cart__user=user) 
     total_amount = sum(item.price for item in cart_items)
@@ -70,7 +79,8 @@ def paymenthandler(request):
                 array=[]
                 for item in cart_items:
                     array.append([item.item,item.price,item.img,item.quantity])
-                order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address)
+                order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address,payment_id=payment_id)
+                order.order_status="ordered"
                 order.save()
                 cart_items.delete()
 

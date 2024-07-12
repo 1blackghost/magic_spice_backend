@@ -89,6 +89,8 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     items=models.CharField(max_length=1000)
     address=models.CharField(max_length=100)
+    payment_id=models.CharField(max_length=100)
+    order_status=models.CharField(max_length=100)
 
     def __str__(self):
         return f"Order {self.order_id} by {self.user.name}"
