@@ -86,7 +86,7 @@ def all_orders(request):
 def cancel_order(request, order_id):
     user = request.session.get("user")
     order = get_object_or_404(Order, order_id=order_id, user=user)
-    refund_payment(order.payment_id,order.total_amount)
+    refund_payment(order.payment_id,order.total_amount*100)
     order.order_status="Canceled"
     order.save()
     try:
