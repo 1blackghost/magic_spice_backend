@@ -10,16 +10,23 @@ from django.shortcuts import get_object_or_404
 def get_product(request, product_id):
     try:
         product = get_object_or_404(ProductDB, id=product_id)
-        
+                
         product_data = {
             "id": product.id,
             "name": product.name,
             "price": product.price,
             "quantity": product.quantity,
             "category": product.category,
-            "img": product.img,
+            "img1": product.img1,  
             "description": product.description,
+            "img2": product.img2,
+            "img3": product.img3,
+            "percentage": product.percentage,
+            "delivery_fees": product.delivery_fees,
+            "tax": product.tax,
+            "other_fees": product.other_fees,
         }
+
         
         return JsonResponse(product_data)
     except:
@@ -99,8 +106,7 @@ def get_cart(request):
 def cart(request, value, qu):
     uid=request.session.get("user_id")
     user = User.objects.get(uid=uid)
-    value=find_valid_part(str(value))
-    print(value)
+
     try:
         cart, created = Cart.objects.get_or_create(user=user)
         value = value.lower()
@@ -109,7 +115,7 @@ def cart(request, value, qu):
         if qu > 0:
             product = ProductDB.objects.get(name=str(value))
             p = qu * int(product.price)  
-            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img)
+            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id)
             cart.save()
             if (int(product.quantity)-qu)>-1:
             
@@ -123,11 +129,9 @@ def cart(request, value, qu):
                 return JsonResponse({"status": "ok", "message": "Item quantity updated in cart."}, status=200)
         else:
             return JsonResponse({"status": "bad", "error": "Invalid quantity. Quantity must be greater than 0."}, status=400)
-    except ValueError:
-        return JsonResponse({"status": "bad", "error": "Invalid quantity format. Please provide a valid integer."}, status=400)
-    except ProductDB.DoesNotExist:
-        return JsonResponse({"status": "bad", "error": "Product not found."}, status=404)
+
     except Exception as e:
+        print(str(e))
         return JsonResponse({"status": "bad", "error": str(e)}, status=500)
 
 def delete(request, value):

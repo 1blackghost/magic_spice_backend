@@ -9,9 +9,14 @@ class ProductDB(models.Model):
     price=models.CharField(max_length=100)
     quantity=models.CharField(max_length=10,default=None)
     category=models.CharField(max_length=10,default=None)
-    img=models.CharField(max_length=100)
+    img1=models.CharField(max_length=100,default=None)
+    img2=models.CharField(max_length=100,default=None)
+    img3=models.CharField(max_length=100,default=None)
+    percentage=models.CharField(max_length=100,default=None)
+    delivery_fees=models.CharField(max_length=100,default=None)
+    tax=models.CharField(max_length=100,default=None)
+    other_fees=models.CharField(max_length=100,default=None)
     description=models.CharField(max_length=1000,default="No Description")
-
 
     
     def __str__(self):
@@ -20,8 +25,6 @@ class ProductDB(models.Model):
 class User(models.Model):
     uid = models.AutoField(primary_key=True) 
     name = models.CharField(max_length=100,unique=False)
-    
-    
     email = models.EmailField(unique=True)  
     password = models.CharField(max_length=128)  
     email_verified = models.BooleanField(default=False) 
@@ -52,7 +55,7 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart for {self.user.username}"
 
-    def add_item(self, item_name, quantity,price,img):
+    def add_item(self, item_name, quantity,price,img,product_id):
         existing_item = self.cartitem_set.filter(item=item_name).first()
 
         if existing_item:
@@ -60,7 +63,7 @@ class Cart(models.Model):
             existing_item.price += price 
             existing_item.save()
         else:
-            CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img)
+            CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img,product_id=product_id)
 
     def remove_item(self, item_name):
         self.cartitem_set.filter(item=item_name).delete()
@@ -77,6 +80,7 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1)
     price = models.IntegerField(default=0)
     img=models.CharField(max_length=100,null=True)
+    product_id=models.CharField(max_length=100,null=True)
 
     def __str__(self):
         return f"{self.quantity} x {self.item} in cart for {self.cart.user.username}"

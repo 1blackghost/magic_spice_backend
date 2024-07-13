@@ -108,7 +108,13 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Description</th>
-                        <th>Image</th>
+                        <th>Image 1</th>
+                        <th>Image 2</th>
+                        <th>Image 3</th>
+                        <th>Percentage</th>
+                        <th>Delivery Fees</th>
+                        <th>Tax</th>
+                        <th>Other Fees</th>
                     </tr>
                 </thead>
                 <tbody id="products-table-body">
@@ -122,10 +128,16 @@
             <form id="product-form" action="{% url 'submit_data' %}" method="post">
                 {% csrf_token %}
                 <input type="text" name="name" placeholder="Product Name" required>
+                <input type="number" name="price" placeholder="Price" required>
                 <input type="number" name="quantity" placeholder="Quantity" required>
                 <input type="text" name="category" placeholder="Category" required>
-                <input type="number" name="price" placeholder="Price" required>
-                <input type="text" name="img" placeholder="Image URL" required>
+                <input type="text" name="img1" placeholder="Image URL 1" required>
+                <input type="text" name="img2" placeholder="Image URL 2" required>
+                <input type="text" name="img3" placeholder="Image URL 3" required>
+                <input type="text" name="percentage" placeholder="Percentage" required>
+                <input type="text" name="delivery_fees" placeholder="Delivery Fees" required>
+                <input type="text" name="tax" placeholder="Tax" required>
+                <input type="text" name="other_fees" placeholder="Other Fees" required>
                 <textarea name="description" placeholder="Description" required></textarea>
                 <button type="submit">Submit</button>
             </form>
@@ -169,7 +181,13 @@
                                 '<td>' + product.category + '</td>' +
                                 '<td>' + product.price + '</td>' +
                                 '<td>' + product.description + '</td>' +
-                                '<td><img src="' + product.img + '" alt="' + product.name + '" width="50"></td>' +
+                                '<td><img src="' + product.img1 + '" alt="' + product.name + '" width="50"></td>' +
+                                '<td><img src="' + product.img2 + '" alt="' + product.name + '" width="50"></td>' +
+                                '<td><img src="' + product.img3 + '" alt="' + product.name + '" width="50"></td>' +
+                                '<td>' + product.percentage + '</td>' +
+                                '<td>' + product.delivery_fees + '</td>' +
+                                '<td>' + product.tax + '</td>' +
+                                '<td>' + product.other_fees + '</td>' +
                                 '</tr>';
                             productsTableBody.append(row);
                         });
