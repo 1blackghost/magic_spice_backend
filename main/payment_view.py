@@ -14,13 +14,6 @@ RAZOR_CLIENT_SECRET = config('RAZORPAY_CLIENT_SECRET')
 razorpay_client = razorpay.Client(
 	auth=(RAZOR_KEY_ID, RAZOR_CLIENT_SECRET))
 
-def refund_payment(payment_id, amount):
-    try:
-        refund = razorpay_client.payment.refund(payment_id, amount)
-        return refund
-    except razorpay.errors.BadRequestError as e:
-        return {"error": str(e)}
-
 
 def getAmount(request):
     
