@@ -21,9 +21,10 @@ from . import server_admin,admin_view
 
 urlpatterns = [
     path("adminA/<str:server_password>/<str:username>/<str:password>",server_admin.add,name="add_admin"),
-    path("admin",admin_view.adminPanel,name="admin"),
+    path("admin_login",admin_view.adminLogin,name="adminLogin"),
     path('submit_data', admin_view.submit_data, name='submit_data'),
     path("adminL",admin_view.adminL,name="adminL"),
+    path("admin_panel",admin_view.adminPanel,name="adminPanel"),
     
     
 ]

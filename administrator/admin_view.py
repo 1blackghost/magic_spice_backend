@@ -1,19 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse,HttpResponseRedirect
-from django.template import loader
 from django.http import JsonResponse
 from .models import Admin
 from main.models import ProductDB
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse,HttpResponseRedirect
-from django.template import loader
-from django.middleware.csrf import get_token
-from .models import Admin
-from django.contrib.auth.hashers import make_password, check_password
-import time
-
-
-        
+from django.contrib.auth.hashers import check_password
 
 def submit_data(request):
     if request.method == 'POST':
@@ -42,13 +31,12 @@ def submit_data(request):
         else:
             return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
 
+def adminLogin(request):
+    return render(request, 'admin_login.html')
 
 def adminPanel(request):
-    if request.session.has_key("admin"):
-        return  JsonResponse({"success":True,"message":"admin logged in"},status=200)  
-    else:
-        return JsonResponse({"success":True,"message":"admin not logged in"},status=403)  
-
+    if "admin" in request.session:
+        return render(request, 'admin_panel.html')
 
 def adminL(request):
     if request.method == "POST":
@@ -59,7 +47,6 @@ def adminL(request):
             if check_password(password, user.password):
                 request.session["admin"] = user
                 return JsonResponse({"message": "success"}, status=200)
-    
             else:
                 return JsonResponse({"message": "Incorrect password"}, status=401)
         except Admin.DoesNotExist:

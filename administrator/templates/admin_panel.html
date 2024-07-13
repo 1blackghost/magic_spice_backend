@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+        input, select, textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <div class="tabs">
+            <div class="tab active" data-tab="products">Products</div>
+            <div class="tab" data-tab="add-update">Add/Update Product</div>
+            <div class="tab" data-tab="orders">Orders</div>
+        </div>
+
+        <div class="tab-content active" id="products">
+            <h2>All Products</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table-body">
+                    <!-- Products will be loaded here via AJAX -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="add-update">
+            <h2>Add/Update Product</h2>
+            <form id="product-form" action="{% url 'submit_data' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Product Name" required>
+                <input type="number" name="quantity" placeholder="Quantity" required>
+                <input type="text" name="category" placeholder="Category" required>
+                <input type="number" name="price" placeholder="Price" required>
+                <input type="text" name="img" placeholder="Image URL" required>
+                <textarea name="description" placeholder="Description" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+            <div class="message" id="product-message"></div>
+        </div>
+
+        <div class="tab-content" id="orders">
+            <h2>All Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>Items</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Orders will be loaded here via AJAX -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function loadProducts() {
+                $.ajax({
+                    url: '{% url "products" %}',
+                    method: 'GET',
+                    success: function(data) {
+                        var productsTableBody = $('#products-table-body');
+                        productsTableBody.empty();
+                        data.forEach(function(product) {
+                            var row = '<tr>' +
+                                '<td>' + product.name + '</td>' +
+                                '<td>' + product.quantity + '</td>' +
+                                '<td>' + product.category + '</td>' +
+                                '<td>' + product.price + '</td>' +
+                                '<td>' + product.description + '</td>' +
+                                '<td><img src="' + product.img + '" alt="' + product.name + '" width="50"></td>' +
+                                '</tr>';
+                            productsTableBody.append(row);
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
+            function loadOrders() {
+                $.ajax({
+                    url: '{% url "all_orders" %}',
+                    method: 'GET',
+                    success: function(data) {
+                        var ordersTableBody = $('#orders-table-body');
+                        ordersTableBody.empty();
+                        data.orders.forEach(function(order) {
+                            var row = '<tr>' +
+                                '<td>' + order.order_id + '</td>' +
+                                '<td>' + order.user + '</td>' +
+                                '<td>' + order.order_date + '</td>' +
+                                '<td>' + order.total_amount + '</td>' +
+                                '<td>' + order.items + '</td>' +
+                                '<td>' + order.address + '</td>' +
+                                '<td>' + order.order_status + '</td>' +
+                                '</tr>';
+                            ordersTableBody.append(row);
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
+            function switchTab(tab) {
+                $('.tab').removeClass('active');
+                $('.tab-content').removeClass('active');
+                $('[data-tab="' + tab + '"]').addClass('active');
+                $('#' + tab).addClass('active');
+            }
+
+            $('.tab').on('click', function() {
+                var tab = $(this).data('tab');
+                switchTab(tab);
+
+                if (tab === 'products') {
+                    loadProducts();
+                } else if (tab === 'orders') {
+                    loadOrders();
+                }
+            });
+
+            $('#product-form').on('submit', function(event) {
+                event.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#product-message').text('Product successfully added/updated.').addClass('success').removeClass('error');
+                        form[0].reset();
+                        loadProducts();
+                    },
+                    error: function(xhr) {
+                        $('#product-message').text('An error occurred: ' + xhr.responseText).addClass('error').removeClass('success');
+                    }
+                });
+            });
+
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
