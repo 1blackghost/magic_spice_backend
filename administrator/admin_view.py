@@ -21,18 +21,19 @@ def submit_data(request):
             
             try:
                 existing_product = ProductDB.objects.get(name=name)
-                existing_product.name = name
-                existing_product.quantity = quantity
-                existing_product.category = category
-                existing_product.price = price
-                existing_product.img1 = img1
-                existing_product.img2 = img2
-                existing_product.img3 = img3
-                existing_product.percentage = percentage
-                existing_product.delivery_fees = delivery_fees
-                existing_product.tax = tax
-                existing_product.other_fees = other_fees
-                existing_product.description = description
+                existing_product.name = name if name else existing_product.name
+                existing_product.quantity = quantity if quantity else existing_product.quantity
+                existing_product.category = category if category else existing_product.category
+                existing_product.price = price if price else existing_product.price
+                existing_product.img1 = img1 if img1 else existing_product.img1
+                existing_product.img2 = img2 if img2 else existing_product.img2
+                existing_product.img3 = img3 if img3 else existing_product.img3
+                existing_product.percentage = percentage if percentage else existing_product.percentage
+                existing_product.delivery_fees = delivery_fees if delivery_fees else existing_product.delivery_fees
+                existing_product.tax = tax if tax else existing_product.tax
+                existing_product.other_fees = other_fees if other_fees else existing_product.other_fees
+                existing_product.description = description if description else existing_product.description
+                
                 existing_product.save()
                 return JsonResponse({'success': True})
             except ProductDB.DoesNotExist:

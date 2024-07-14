@@ -127,18 +127,18 @@
             <h2>Add/Update Product</h2>
             <form id="product-form" action="{% url 'submit_data' %}" method="post">
                 {% csrf_token %}
-                <input type="text" name="name" placeholder="Product Name" required>
-                <input type="number" name="price" placeholder="Price" required>
-                <input type="number" name="quantity" placeholder="Quantity" required>
-                <input type="text" name="category" placeholder="Category" required>
-                <input type="text" name="img1" placeholder="Image URL 1" required>
-                <input type="text" name="img2" placeholder="Image URL 2" required>
-                <input type="text" name="img3" placeholder="Image URL 3" required>
-                <input type="text" name="percentage" placeholder="Percentage" required>
-                <input type="text" name="delivery_fees" placeholder="Delivery Fees" required>
-                <input type="text" name="tax" placeholder="Tax" required>
-                <input type="text" name="other_fees" placeholder="Other Fees" required>
-                <textarea name="description" placeholder="Description" required></textarea>
+                <input type="text" name="name" placeholder="Product Name" >
+                <input type="number" name="price" placeholder="Price" >
+                <input type="number" name="quantity" placeholder="Quantity" >
+                <input type="text" name="category" placeholder="Category" >
+                <input type="text" name="img1" placeholder="Image URL 1" >
+                <input type="text" name="img2" placeholder="Image URL 2" >
+                <input type="text" name="img3" placeholder="Image URL 3" >
+                <input type="text" name="percentage" placeholder="Percentage" >
+                <input type="text" name="delivery_fees" placeholder="Delivery Fees" >
+                <input type="text" name="tax" placeholder="Tax" >
+                <input type="text" name="other_fees" placeholder="Other Fees" >
+                <textarea name="description" placeholder="Description" ></textarea>
                 <button type="submit">Submit</button>
             </form>
             <div class="message" id="product-message"></div>
