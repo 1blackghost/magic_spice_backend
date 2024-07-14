@@ -104,7 +104,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Quantity</th>
+                        <th>Quantities</th>
                         <th>Category</th>
                         <th>Price</th>
                         <th>Description</th>
@@ -115,6 +115,16 @@
                         <th>Delivery Fees</th>
                         <th>Tax</th>
                         <th>Other Fees</th>
+                        <th>shelf_life</th>
+                        <th>fssai_info</th>
+                        <th>key_features</th>
+                        <th>return_policy</th>
+                        <th>customer_care</th>
+                        <th>seller_details</th>
+                        <th>disclaimer_details</th>
+                        <th>si_unit</th>
+                        <th>stock</th>
+
                     </tr>
                 </thead>
                 <tbody id="products-table-body">
@@ -129,7 +139,6 @@
                 {% csrf_token %}
                 <input type="text" name="name" placeholder="Product Name" >
                 <input type="number" name="price" placeholder="Price" >
-                <input type="number" name="quantity" placeholder="Quantity" >
                 <input type="text" name="category" placeholder="Category" >
                 <input type="text" name="img1" placeholder="Image URL 1" >
                 <input type="text" name="img2" placeholder="Image URL 2" >
@@ -139,8 +148,22 @@
                 <input type="text" name="tax" placeholder="Tax" >
                 <input type="text" name="other_fees" placeholder="Other Fees" >
                 <textarea name="description" placeholder="Description" ></textarea>
+                <input type="text" name="shelf_life" placeholder="Shelf Life" >
+                <input type="text" name="fssai_info" placeholder="FSSAI Info" >
+                <textarea type="text" name="key_features" placeholder="Key Features"></textarea>
+                <textarea type="text" name="return_policy" placeholder="Return Policy" ></textarea>
+                <input type="text" name="customer_care" placeholder="Customer Care" >
+                <textarea type="text" name="seller_details" placeholder="Seller Details" ></textarea>
+                <textarea type="text" name="disclaimer" placeholder="Disclaimer Details" ></textarea>
+                <input type="text" name="si_unit" placeholder="Item SI unit" >
+                <input type="text" name="quantity" placeholder="Quantities seperated by : " >
+                <input type="text" name="price" placeholder="Price corresponding to quantity by :" >
+                <input type="text" name="stock" placeholder="Value in stock seperated by : " >
+
+
                 <button type="submit">Submit</button>
             </form>
+            
             <div class="message" id="product-message"></div>
         </div>
 
@@ -168,35 +191,45 @@
     <script>
         $(document).ready(function() {
             function loadProducts() {
-                $.ajax({
-                    url: '{% url "products" %}',
-                    method: 'GET',
-                    success: function(data) {
-                        var productsTableBody = $('#products-table-body');
-                        productsTableBody.empty();
-                        data.forEach(function(product) {
-                            var row = '<tr>' +
-                                '<td>' + product.name + '</td>' +
-                                '<td>' + product.quantity + '</td>' +
-                                '<td>' + product.category + '</td>' +
-                                '<td>' + product.price + '</td>' +
-                                '<td>' + product.description + '</td>' +
-                                '<td><img src="' + product.img1 + '" alt="' + product.name + '" width="50"></td>' +
-                                '<td><img src="' + product.img2 + '" alt="' + product.name + '" width="50"></td>' +
-                                '<td><img src="' + product.img3 + '" alt="' + product.name + '" width="50"></td>' +
-                                '<td>' + product.percentage + '</td>' +
-                                '<td>' + product.delivery_fees + '</td>' +
-                                '<td>' + product.tax + '</td>' +
-                                '<td>' + product.other_fees + '</td>' +
-                                '</tr>';
-                            productsTableBody.append(row);
-                        });
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText);
-                    }
-                });
-            }
+    $.ajax({
+        url: '{% url "products" %}',
+        method: 'GET',
+        success: function(data) {
+            var productsTableBody = $('#products-table-body');
+            productsTableBody.empty();
+            data.forEach(function(product) {
+                var row = '<tr>' +
+                    '<td>' + product.name + '</td>' +
+                    '<td>' + product.quantity + '</td>' +
+                    '<td>' + product.category + '</td>' +
+                    '<td>' + product.price + '</td>' +
+                    '<td>' + product.description + '</td>' +
+                    '<td><img src="' + product.img1 + '" alt="' + product.name + '" width="50"></td>' +
+                    '<td><img src="' + product.img2 + '" alt="' + product.name + '" width="50"></td>' +
+                    '<td><img src="' + product.img3 + '" alt="' + product.name + '" width="50"></td>' +
+                    '<td>' + product.percentage + '</td>' +
+                    '<td>' + product.delivery_fees + '</td>' +
+                    '<td>' + product.tax + '</td>' +
+                    '<td>' + product.other_fees + '</td>' +
+                    '<td>' + product.shelf_life + '</td>' +
+                    '<td>' + product.fssai_info + '</td>' +
+                    '<td>' + product.key_features + '</td>' +
+                    '<td>' + product.return_policy + '</td>' +
+                    '<td>' + product.customer_care + '</td>' +
+                    '<td>' + product.seller_details + '</td>' +
+                    '<td>' + product.disclaimer + '</td>' +
+                    '<td>' + product.si_unit + '</td>' +
+                    '<td>' + product.stock + '</td>' +
+
+                    '</tr>';
+                productsTableBody.append(row);
+            });
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+        }
+    });
+}
 
             function loadOrders() {
                 $.ajax({

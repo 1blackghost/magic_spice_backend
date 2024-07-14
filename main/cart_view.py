@@ -25,6 +25,13 @@ def get_product(request, product_id):
             "delivery_fees": product.delivery_fees,
             "tax": product.tax,
             "other_fees": product.other_fees,
+            "shelf_life":product.shelf_life,
+            "fssai_info":product.fssai_info,
+            "key_features":product.key_features,
+            "return_policy":product.return_policy,
+            "customer_care":product.customer_care,
+            "seller_detail":product.seller_details,
+            "si_unit":product.si_unit,
         }
 
         
@@ -110,12 +117,18 @@ def cart(request, value, qu):
     try:
         cart, created = Cart.objects.get_or_create(user=user)
         value = value.lower()
-        qu = int(qu)
         
         if qu > 0:
             product = ProductDB.objects.get(name=str(value))
             dis=int(product.price)*(int(product.percentage)/100)
-            p = qu * int(product.price)-dis
+            index=0
+            for i in product.quantity.split(":"):
+                if i==str(qu):
+                    break
+                index=index+1
+            price=product.price.split(":")[index]
+
+            p = qu * int(price)-dis
             cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id)
             cart.save()
             if (int(product.quantity)-qu)>-1:

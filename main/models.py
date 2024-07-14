@@ -2,25 +2,33 @@ from django.db import models
 import hashlib
 import random
 import string
-
 class ProductDB(models.Model):
-    id=models.AutoField(primary_key=True)
-    name=models.CharField(max_length=100)
-    price=models.CharField(max_length=100)
-    quantity=models.CharField(max_length=10,default=None)
-    category=models.CharField(max_length=10,default=None)
-    img1=models.CharField(max_length=100,default=None)
-    img2=models.CharField(max_length=100,default=None)
-    img3=models.CharField(max_length=100,default=None)
-    percentage=models.CharField(max_length=100,default=None)
-    delivery_fees=models.CharField(max_length=100,default=None)
-    tax=models.CharField(max_length=100,default=None)
-    other_fees=models.CharField(max_length=100,default=None)
-    description=models.CharField(max_length=1000,default="No Description")
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    price = models.CharField(max_length=100)
+    quantity = models.CharField(max_length=10, default=None)
+    category = models.CharField(max_length=10, default=None)
+    img1 = models.CharField(max_length=100, default=None)
+    img2 = models.CharField(max_length=100, default=None)
+    img3 = models.CharField(max_length=100, default=None)
+    percentage = models.CharField(max_length=100, default=None)
+    delivery_fees = models.CharField(max_length=100, default=None)
+    tax = models.CharField(max_length=100, default=None)
+    other_fees = models.CharField(max_length=100, default=None)
+    description = models.CharField(max_length=1000, default="No Description")
+    shelf_life = models.CharField(max_length=1000, default=None, null=True)
+    fssai_info = models.CharField(max_length=1000, default=None, null=True)
+    key_features = models.CharField(max_length=1000, default=None, null=True)
+    return_policy = models.CharField(max_length=1000, default=None, null=True)
+    customer_care = models.CharField(max_length=1000, default=None, null=True)
+    seller_details = models.CharField(max_length=1000, default=None, null=True)
+    disclaimer = models.CharField(max_length=1000, default=None, null=True)
+    si_unit = models.CharField(max_length=100, default=None, null=True)
+    stock = models.CharField(max_length=100,default=None,null=True)
 
-    
     def __str__(self):
         return self.name
+
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True) 

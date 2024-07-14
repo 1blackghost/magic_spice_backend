@@ -92,8 +92,6 @@ def cancel_order(request, order_id):
     try:
         cancellation_request = CancellationRequest(order=order, reason="Customer requested cancellation")
         cancellation_request.save()
-
-
         return JsonResponse({"message": f"Order {order_id} cancelled successfully."}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

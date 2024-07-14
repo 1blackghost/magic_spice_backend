@@ -18,6 +18,15 @@ def submit_data(request):
             tax = request.POST.get('tax')
             other_fees = request.POST.get('other_fees')
             description = request.POST.get('description')
+            shelf_life = request.POST.get('shelf_life')
+            fssai_info = request.POST.get('fssai_info')
+            key_features = request.POST.get('key_features')
+            return_policy = request.POST.get('return_policy')
+            customer_care = request.POST.get('customer_care')
+            seller_details = request.POST.get('seller_details')
+            disclaimer = request.POST.get('disclaimer')
+            si_unit = request.POST.get('si_unit')
+            stock = request.POST.get("stock")
             
             try:
                 existing_product = ProductDB.objects.get(name=name)
@@ -33,7 +42,16 @@ def submit_data(request):
                 existing_product.tax = tax if tax else existing_product.tax
                 existing_product.other_fees = other_fees if other_fees else existing_product.other_fees
                 existing_product.description = description if description else existing_product.description
-                
+                existing_product.shelf_life = shelf_life if shelf_life else existing_product.shelf_life
+                existing_product.fssai_info = fssai_info if fssai_info else existing_product.fssai_info
+                existing_product.key_features = key_features if key_features else existing_product.key_features
+                existing_product.return_policy = return_policy if return_policy else existing_product.return_policy
+                existing_product.customer_care = customer_care if customer_care else existing_product.customer_care
+                existing_product.seller_details = seller_details if seller_details else existing_product.seller_details
+                existing_product.disclaimer = disclaimer if disclaimer else existing_product.disclaimer
+                existing_product.si_unit = si_unit if si_unit else existing_product.si_unit
+                existing_product.stock = stock if stock else existing_product.stock
+
                 existing_product.save()
                 return JsonResponse({'success': True})
             except ProductDB.DoesNotExist:
@@ -49,7 +67,15 @@ def submit_data(request):
                     delivery_fees=delivery_fees, 
                     tax=tax, 
                     other_fees=other_fees, 
-                    description=description
+                    description=description,
+                    shelf_life=shelf_life,
+                    fssai_info=fssai_info,
+                    key_features=key_features,
+                    return_policy=return_policy,
+                    customer_care=customer_care,
+                    seller_details=seller_details,
+                    disclaimer=disclaimer,
+                    si_unit=si_unit
                 )
                 new_product.save()
                 return JsonResponse({'success': True})
@@ -57,6 +83,7 @@ def submit_data(request):
             return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
     else:
         return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+
 def adminLogin(request):
     return render(request, 'admin_login.html')
 
