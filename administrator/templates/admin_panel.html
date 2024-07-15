@@ -138,7 +138,6 @@
             <form id="product-form" action="{% url 'submit_data' %}" method="post">
                 {% csrf_token %}
                 <input type="text" name="name" placeholder="Product Name" >
-                <input type="number" name="price" placeholder="Price" >
                 <input type="text" name="category" placeholder="Category" >
                 <input type="text" name="img1" placeholder="Image URL 1" >
                 <input type="text" name="img2" placeholder="Image URL 2" >

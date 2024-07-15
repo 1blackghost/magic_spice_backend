@@ -72,7 +72,7 @@ def paymenthandler(request):
                 array={}
                 n=0
                 for item in cart_items:
-                    array["product"+str(n)]={"name":item.item,"price":item.price,"image":item.img,"quantity":item.quantity}
+                    array["product"+str(n)]={"name":item.item,"price":item.price,"image":item.img,"quantity":item.quantity,"number":item.number}
                     n=n+1
                 order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address,payment_id=payment_id)
                 order.order_status="ordered"

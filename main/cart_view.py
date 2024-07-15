@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
 from django.shortcuts import get_object_or_404
+import traceback
 
 
 def get_product(request, product_id):
@@ -106,37 +107,43 @@ def get_cart(request):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart_items = CartItem.objects.filter(cart__user=user)
-        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img} for item in cart_items]
+        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img,"number":item.number} for item in cart_items]
         return JsonResponse({'cart': cart_data})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-def cart(request, value, qu):
+def cart(request, value,number,qu):
     uid=request.session.get("user_id")
     user = User.objects.get(uid=uid)
+    number=int(number)
 
     try:
         cart, created = Cart.objects.get_or_create(user=user)
         value = value.lower()
-        
-        if qu > 0:
-            product = ProductDB.objects.get(name=str(value))
-            dis=int(product.price)*(int(product.percentage)/100)
-            index=0
-            for i in product.quantity.split(":"):
-                if i==str(qu):
-                    break
-                index=index+1
-            price=product.price.split(":")[index]
+        product = ProductDB.objects.get(name=str(value))
+        index=0
+        for i in product.quantity.split(":"):
+            if i==str(qu):
+                break
+            index=index+1
+        qu=int(qu)
 
-            p = qu * int(price)-dis
-            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id)
-            cart.save()
-            if (int(product.quantity)-qu)>-1:
-            
-                product.save()
-            else:
-                return JsonResponse({"status":"bad","message":"item finished!"},status=400)
+        price=product.price.split(":")[index]    
+
+        if number > 0:
+            dis=int(price)*(int(product.percentage)/100)
+            index=0
+
+
+            p = int(price)
+            p = p-dis
+            tax=int(price)*(int(product.percentage)/100)
+            p=int(product.delivery_fees)+tax+int(product.other_fees)+p
+            p=p*int(number)
+            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id,number=number)
+            v=int(product.stock.split(":")[index])-number
+            if v>-1: 
+                cart.save()            
             
             if created:
                 return JsonResponse({"status": "ok", "message": "Item added to cart."}, status=200)
@@ -147,6 +154,7 @@ def cart(request, value, qu):
 
     except Exception as e:
         print(str(e))
+        traceback.print_exc()
         return JsonResponse({"status": "bad", "error": str(e)}, status=500)
 
 def delete(request, value):

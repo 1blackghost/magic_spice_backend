@@ -63,15 +63,10 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart for {self.user.username}"
 
-    def add_item(self, item_name, quantity,price,img,product_id):
-        existing_item = self.cartitem_set.filter(item=item_name).first()
+    def add_item(self, item_name, quantity,price,img,product_id,number):
 
-        if existing_item:
-            existing_item.quantity += quantity
-            existing_item.price += price 
-            existing_item.save()
-        else:
-            CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img,product_id=product_id)
+
+        CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img,product_id=product_id,number=number)
 
     def remove_item(self, item_name):
         self.cartitem_set.filter(item=item_name).delete()
@@ -89,6 +84,7 @@ class CartItem(models.Model):
     price = models.IntegerField(default=0)
     img=models.CharField(max_length=100,null=True)
     product_id=models.CharField(max_length=100,null=True)
+    number=models.CharField(max_length=100,null=True)
 
     def __str__(self):
         return f"{self.quantity} x {self.item} in cart for {self.cart.user.username}"
