@@ -32,6 +32,7 @@ def get_product(request, product_id):
             "customer_care":product.customer_care,
             "seller_detail":product.seller_details,
             "si_unit":product.si_unit,
+            "stock":product.stock
         }
 
         
