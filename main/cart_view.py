@@ -107,7 +107,7 @@ def get_cart(request):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart_items = CartItem.objects.filter(cart__user=user)
-        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img,"number":item.number} for item in cart_items]
+        cart_data = [{'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img,"number":item.number,"tax":item.tax,"delivery_fees":item.delivery_fees,"other_fees":item.delivery_fees,"discount":item.discount} for item in cart_items]
         return JsonResponse({'cart': cart_data})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -140,7 +140,7 @@ def cart(request, value,number,qu):
             tax=int(price)*(int(product.percentage)/100)
             p=int(product.delivery_fees)+tax+int(product.other_fees)+p
             p=p*int(number)
-            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id,number=number)
+            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id,number=number,tax=product.tax,other_fees=product.other_fees,discount=product.percentage,delivery_fees=product.delivery_fees)
             v=int(product.stock.split(":")[index])-number
             if v>-1: 
                 cart.save()            
