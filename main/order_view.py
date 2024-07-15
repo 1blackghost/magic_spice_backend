@@ -40,14 +40,17 @@ def update_order_status(request, order_id,status):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-def refund_payment(payment_id, amount):
+def refund_payment(payment_id, amount_to_refund):
     try:
-        refund = razorpay_client.payment.refund(payment_id, amount)
+        refund_data = {
+            "amount": amount_to_refund,
+            "speed": "normal"  
+        }
+        refund = razorpay_client.payment.refund(payment_id, refund_data)
+        print(refund)
         return refund
     except razorpay.errors.BadRequestError as e:
         return {"error": str(e)}
-
 @csrf_exempt
 def user_orders(request):
     if request.method == "GET":
@@ -111,7 +114,7 @@ def all_orders(request):
 @csrf_exempt
 def cancel_order(request, order_id):
     user = request.session.get("user_id")
-    order = get_object_or_404(Order, order_id=order_id, user=user)
+    order = Order.objects.get(order_id=order_id)
     refund_payment(order.payment_id,order.total_amount*100)
     order.order_status="Canceled"
     order.save()
