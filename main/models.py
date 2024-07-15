@@ -92,6 +92,23 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.item} in cart for {self.cart.user.username}"
+    def update_price(self):
+        product = ProductDB.objects.get(id=self.product_id)
+        index = 0
+        for i in product.quantity.split(":"):
+            if str(self.quantity) == str(i):
+                break
+            index += 1
+
+        price = int(product.price.split(":")[index])
+        o_price = int(product.price.split(":")[index])
+        discount = price * (int(product.percentage) / 100)
+        price -= discount
+        tax =  int(o_price) * (int(product.tax) / 100)
+        delivery_fees = int(product.delivery_fees)
+        other_fees = int(product.other_fees)
+        self.price = (price + tax + delivery_fees + other_fees) * int(self.number)
+        self.save()
     
 class Order(models.Model):
     order_id = models.AutoField(primary_key=True)

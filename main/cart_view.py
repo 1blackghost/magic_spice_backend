@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 import traceback
 
 
+
 def get_product(request, product_id):
     try:
         product = get_object_or_404(ProductDB, id=product_id)
@@ -131,16 +132,21 @@ def cart(request, value,number,qu):
         price=product.price.split(":")[index]    
 
         if number > 0:
-            dis=int(price)*(int(product.percentage)/100)
-            index=0
 
+            price = int(product.price.split(":")[index])
+            original_price = price  
 
-            p = int(price)
-            p = p-dis
-            tax=int(price)*(int(product.percentage)/100)
-            p=int(product.delivery_fees)+tax+int(product.other_fees)+p
-            p=p*int(number)
-            cart.add_item(item_name=product.name, quantity=qu, price=p,img=product.img1,product_id=product.id,number=number,tax=product.tax,other_fees=product.other_fees,discount=product.percentage,delivery_fees=product.delivery_fees)
+            discount = original_price * (int(product.percentage) / 100)
+            price -= discount
+
+            tax = original_price * (int(product.tax) / 100)
+
+            delivery_fees = int(product.delivery_fees)
+            other_fees = int(product.other_fees)
+
+            final_price = (price + tax + delivery_fees + other_fees) * int(number)
+
+            cart.add_item(item_name=product.name, quantity=qu, price=final_price,img=product.img1,product_id=product.id,number=number,tax=product.tax,other_fees=product.other_fees,discount=product.percentage,delivery_fees=product.delivery_fees)
             v=int(product.stock.split(":")[index])-number
             if v>-1: 
                 cart.save()            
@@ -162,7 +168,7 @@ def delete(request, value):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart, created = Cart.objects.get_or_create(user=user)
-        cart.remove_item(item_name=value)
+        cart.remove_item(uid=value)
         cart.save()
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as e:

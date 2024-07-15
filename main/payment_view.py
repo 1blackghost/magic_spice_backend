@@ -5,6 +5,7 @@ from .models import CartItem,Order
 import json
 from decouple import config
 from .models import Cart, CartItem,ProductDB,User
+import traceback
 
 
 RAZOR_KEY_ID = config('RAZORPAY_KEY_ID')
@@ -16,9 +17,19 @@ razorpay_client = razorpay.Client(
 
 
 def getAmount(request):
-    
     user=request.session.get("user_id")
     cart_items = CartItem.objects.filter(cart__user=user) 
+    for item in cart_items:
+        product = ProductDB.objects.get(id=item.product_id)
+        index=0
+        for i in product.quantity.split(":"):
+            if str(item.quantity)==str(i):
+                break
+            index=index+1
+        if not ((int(product.stock.split(":")[index])-int(item.number))>-1):
+            return JsonResponse({"message":"some of the items may have finished!"},status=400)
+            
+
     total_amount = sum(item.price for item in cart_items)
     currency = 'INR'
     amount = total_amount*100
@@ -74,6 +85,32 @@ def paymenthandler(request):
                 for item in cart_items:
                     array["product"+str(n)]={"name":item.item,"price":item.price,"image":item.img,"quantity":item.quantity,"number":item.number}
                     n=n+1
+                    user=request.session.get("user_id")
+                cart_items = CartItem.objects.filter(cart__user=user) 
+                for item in cart_items:
+                    product = ProductDB.objects.get(id=item.product_id)
+                    index = 0
+
+                    quantities = product.quantity.split(":")
+                    for i, qty in enumerate(quantities):
+                        if str(item.quantity) == str(qty):
+                            index = i
+                            break
+                    
+                    stock_values = product.stock.split(":")
+                    stock_value = int(stock_values[index])
+                    
+                    stock_value -= int(item.number)
+                    
+                    stock_values[index] = str(stock_value)
+                    
+                    new_stock = ":".join(stock_values)
+                    
+                    product.stock = new_stock
+                    product.save()
+
+                user_id = request.session.get("user_id")
+                user = User.objects.get(pk=user_id) 
                 order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address,payment_id=payment_id)
                 order.order_status="ordered"
                 order.save()
@@ -84,6 +121,7 @@ def paymenthandler(request):
                 return JsonResponse({"message": "Payment signature verification failed!"}, status=400)
         except Exception as e:
             print(str(e))
+            traceback.print_exc()
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)

@@ -1,8 +1,17 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Admin
-from main.models import ProductDB
+from main.models import ProductDB,CartItem
 from django.contrib.auth.hashers import check_password
+from django.views.decorators.csrf import csrf_protect,csrf_exempt
+from django.db import transaction
+
+def update_cart_item_prices(product):
+    cart_items = CartItem.objects.filter(product_id=product.id)
+    for item in cart_items:
+        item.update_price()
+        
+@csrf_exempt      
 def submit_data(request):
     if request.method == 'POST':
         if request.session.has_key("admin"):
@@ -51,8 +60,10 @@ def submit_data(request):
                 existing_product.disclaimer = disclaimer if disclaimer else existing_product.disclaimer
                 existing_product.si_unit = si_unit if si_unit else existing_product.si_unit
                 existing_product.stock = stock if stock else existing_product.stock
-
                 existing_product.save()
+
+                update_cart_item_prices(existing_product)
+
                 return JsonResponse({'success': True})
             except ProductDB.DoesNotExist:
                 new_product = ProductDB(
@@ -75,8 +86,10 @@ def submit_data(request):
                     customer_care=customer_care,
                     seller_details=seller_details,
                     disclaimer=disclaimer,
-                    si_unit=si_unit
+                    si_unit=si_unit,
+                    stock=stock
                 )
+
                 new_product.save()
                 return JsonResponse({'success': True})
         else:
@@ -91,6 +104,7 @@ def adminPanel(request):
     if "admin" in request.session:
         return render(request, 'admin_panel.html')
 
+@csrf_exempt
 def adminL(request):
     if request.method == "POST":
         email = request.POST.get('email')
