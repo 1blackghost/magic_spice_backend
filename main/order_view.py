@@ -48,7 +48,7 @@ def refund_payment(payment_id, amount_to_refund):
         }
         refund = razorpay_client.payment.refund(payment_id, refund_data)
         print(refund)
-        return refund
+        return True
     except razorpay.errors.BadRequestError as e:
         return {"error": str(e)}
 @csrf_exempt
@@ -115,12 +115,14 @@ def all_orders(request):
 def cancel_order(request, order_id):
     user = request.session.get("user_id")
     order = Order.objects.get(order_id=order_id)
-    refund_payment(order.payment_id,order.total_amount*100)
-    order.order_status="Canceled"
-    order.save()
-    try:
-        cancellation_request = CancellationRequest(order=order, reason="Customer requested cancellation")
-        cancellation_request.save()
-        return JsonResponse({"message": f"Order {order_id} cancelled successfully."}, status=200)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    if refund_payment(order.payment_id,float(order.total_amount*100)):
+        order.order_status="canceled"
+        order.save()
+        try:
+            return JsonResponse({"message": f"Order {order_id} cancelled successfully and refund initialised."}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error":"refund failed"}, status=500)
+
+        
