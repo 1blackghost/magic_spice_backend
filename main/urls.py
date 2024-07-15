@@ -30,7 +30,7 @@ urlpatterns = [
     path('signup', auth.signup, name='signup'),
     path('get_cart', cart_view.get_cart, name='get_cart'),
     path('cart/<str:value>/<int:number>/<int:qu>', cart_view.cart, name='cart'),
-    path('delete/<str:value>', cart_view.delete, name='delete'),
+    path('delete/<str:value>/<str:price>', cart_view.delete, name='delete'),
     path("getaddr",cart_view.get_addr,name="getaddr"),
     path("setaddr",cart_view.set_addr,name="setaddr"),
     path("products",cart_view.get_all_products,name="products"),
@@ -40,6 +40,6 @@ urlpatterns = [
     path('all_orders', order_view.all_orders, name='all_orders'),
     path('cancel/<int:order_id>', order_view.cancel_order, name='cancel_order'),
     path('product/<int:product_id>', cart_view.get_product, name='get_product'),
+    path('update_order_status/<int:order_id>/<str:status>', order_view.update_order_status, name='update_order_status'),
 
-    
 ]

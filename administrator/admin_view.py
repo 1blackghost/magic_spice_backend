@@ -60,9 +60,11 @@ def submit_data(request):
                 existing_product.disclaimer = disclaimer if disclaimer else existing_product.disclaimer
                 existing_product.si_unit = si_unit if si_unit else existing_product.si_unit
                 existing_product.stock = stock if stock else existing_product.stock
-                existing_product.save()
+                if "admin" in request.session:
 
-                update_cart_item_prices(existing_product)
+                    existing_product.save()
+
+                    update_cart_item_prices(existing_product)
 
                 return JsonResponse({'success': True})
             except ProductDB.DoesNotExist:
@@ -89,8 +91,9 @@ def submit_data(request):
                     si_unit=si_unit,
                     stock=stock
                 )
+                if "admin" in request.session:
 
-                new_product.save()
+                    new_product.save()
                 return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)

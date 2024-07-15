@@ -108,9 +108,10 @@ def get_cart(request):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart_items = CartItem.objects.filter(cart__user=user)
-        cart_data = [{"cart":item.cart,'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img,"number":item.number,"tax":item.tax,"delivery_fees":item.delivery_fees,"other_fees":item.delivery_fees,"discount":item.discount,"product_id":item.product_id} for item in cart_items]
+        cart_data = [{"cart_id":item.cart_id,'item': item.item, 'quantity': item.quantity, 'price': item.price,"img":item.img,"number":item.number,"tax":item.tax,"delivery_fees":item.delivery_fees,"other_fees":item.delivery_fees,"discount":item.discount,"product_id":item.product_id} for item in cart_items]
         return JsonResponse({'cart': cart_data})
     except Exception as e:
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
 
 def cart(request, value,number,qu):
@@ -163,12 +164,12 @@ def cart(request, value,number,qu):
         traceback.print_exc()
         return JsonResponse({"status": "bad", "error": str(e)}, status=500)
 
-def delete(request, value):
+def delete(request, value,price):
     try:
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart, created = Cart.objects.get_or_create(user=user)
-        cart.remove_item(cart=value)
+        cart.remove_item(item=value,price=price)
         cart.save()
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as e:

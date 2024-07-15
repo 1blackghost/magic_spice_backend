@@ -15,6 +15,32 @@ RAZOR_CLIENT_SECRET = config('RAZORPAY_CLIENT_SECRET')
 razorpay_client = razorpay.Client(
 	auth=(RAZOR_KEY_ID, RAZOR_CLIENT_SECRET))
 
+@csrf_exempt
+def update_order_status(request, order_id,status):
+    if request.method == "GET":
+        new_status = status
+        if not new_status:
+            return JsonResponse({'error': 'No status provided'}, status=400)
+        
+        try:
+            user_id = request.session.get("admin")
+            if not user_id:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+            order = get_object_or_404(Order, order_id=order_id)
+            order.order_status = new_status
+            order.save()
+            
+            return JsonResponse({'message': f'Order {order_id} status updated to {new_status}'}, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        except Order.DoesNotExist:
+            return JsonResponse({'error': 'Order not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 def refund_payment(payment_id, amount):
     try:
         refund = razorpay_client.payment.refund(payment_id, amount)
