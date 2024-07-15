@@ -168,7 +168,7 @@ def delete(request, value):
         uid=request.session.get("user_id")
         user = User.objects.get(uid=uid)
         cart, created = Cart.objects.get_or_create(user=user)
-        cart.remove_item(uid=value)
+        cart.remove_item(product_id==value)
         cart.save()
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as e:
