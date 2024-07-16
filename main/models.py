@@ -68,7 +68,7 @@ class Cart(models.Model):
         CartItem.objects.create(cart=self, item=item_name, quantity=quantity, price=price,img=img,product_id=product_id,number=number,tax=tax,other_fees=other_fees,discount=discount,delivery_fees=delivery_fees)
 
     def remove_item(self, item,price):
-        self.cartitem_set.filter(item=item,price=price).delete()
+        self.cartitem_set.filter(item=item,price=price).first().delete()
 
     def get_quantity(self, item_name):
         item = self.cartitem_set.filter(item=item_name).first()
