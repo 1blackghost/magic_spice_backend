@@ -26,7 +26,7 @@ def getAmount(request):
             if str(item.quantity)==str(i):
                 break
             index=index+1
-        if not ((int(product.stock.split(":")[index])-int(item.number))>-1):
+        if not ((int(product.stock.split(":")[index])-int(item.number))>0):
             return JsonResponse({"message":"some of the items may have finished!"},status=400)
             
 
