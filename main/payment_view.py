@@ -76,47 +76,53 @@ def paymenthandler(request):
 
             if result is not None:
                 user_id = request.session.get("user_id")
-                user = User.objects.get(pk=user_id) 
+                user = User.objects.get(pk=user_id)
 
                 cart_items = CartItem.objects.filter(cart__user=user)
-                total_amount = sum(item.price for item in cart_items)
-                array={}
-                n=0
-                for item in cart_items:
-                    array["product"+str(n)]={"name":item.item,"price":item.price,"image":item.img,"quantity":item.quantity,"number":item.number}
-                    n=n+1
-                    user=request.session.get("user_id")
-                cart_items = CartItem.objects.filter(cart__user=user) 
-                for item in cart_items:
-                    product = ProductDB.objects.get(id=item.product_id)
-                    index = 0
+                if not cart_items.exists():
+                    return JsonResponse({"message": "No items in the cart!"}, status=400)
 
+                for item in cart_items:
+                    # Prepare order details for each item
+                    item_details = {
+                        "name": item.item,
+                        "price": item.price,
+                        "image": item.img,
+                        "quantity": item.quantity,
+                        "number": item.number
+                    }
+
+                    # Update stock quantities
+                    product = ProductDB.objects.get(id=item.product_id)
                     quantities = product.quantity.split(":")
+                    stock_values = product.stock.split(":")
+
                     for i, qty in enumerate(quantities):
                         if str(item.quantity) == str(qty):
-                            index = i
+                            stock_value = int(stock_values[i])
+                            stock_value -= int(item.number)
+                            stock_values[i] = str(stock_value)
                             break
                     
-                    stock_values = product.stock.split(":")
-                    stock_value = int(stock_values[index])
-                    
-                    stock_value -= int(item.number)
-                    
-                    stock_values[index] = str(stock_value)
-                    
-                    new_stock = ":".join(stock_values)
-                    
-                    product.stock = new_stock
+                    product.stock = ":".join(stock_values)
                     product.save()
 
-                user_id = request.session.get("user_id")
-                user = User.objects.get(pk=user_id) 
-                order = Order.objects.create(user=user, total_amount=total_amount,items=array,address=user.address,payment_id=payment_id)
-                order.order_status="ordered"
-                order.save()
+                    # Create a separate order for each cart item
+                    order = Order.objects.create(
+                        user=user,
+                        total_amount=item.price,
+                        items=item_details,
+                        address=user.address,
+                        payment_id=payment_id,
+                        order_status="ordered"
+                    )
+
+                    order.save()
+
+                # Delete all cart items after processing
                 cart_items.delete()
 
-                return JsonResponse({"message": "Payment completed and order placed successfully!"}, status=200)
+                return JsonResponse({"message": "Payment completed and orders placed successfully!"}, status=200)
             else:
                 return JsonResponse({"message": "Payment signature verification failed!"}, status=400)
         except Exception as e:

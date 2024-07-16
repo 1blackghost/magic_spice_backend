@@ -173,4 +173,6 @@ def delete(request, value,price):
         cart.save()
         return JsonResponse({"status": "ok"}, status=200)
     except Exception as e:
+        traceback.print_exc()
+
         return JsonResponse({"status": "bad"}, status=500)
