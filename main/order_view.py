@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Cart, CartItem,ProductDB,User,Order
 import razorpay
 from decouple import config
+import json
 
 
 RAZOR_KEY_ID = config('RAZORPAY_KEY_ID')
@@ -115,14 +116,38 @@ def all_orders(request):
 def cancel_order(request, order_id):
     user = request.session.get("user_id")
     order = Order.objects.get(order_id=order_id)
-    if refund_payment(order.payment_id,float(order.total_amount*100)):
-        order.order_status="canceled"
+    
+    if refund_payment(order.payment_id, float(order.total_amount * 100)):
+        order.order_status = "canceled"
+        order.items = order.items.replace("'", '"')
+
+        try:
+            item = json.loads(order.items)
+        except json.JSONDecodeError as e:
+            return JsonResponse({"error": f"JSON decode error: {str(e)}"}, status=400)
+
+        product = ProductDB.objects.get(name=item["name"])
+        
+        quantity_list = product.quantity.split(":")
+        index = 0
+        for i in quantity_list:
+            if str(item["quantity"]) == str(i):
+                break
+            index += 1
+
+        stock_list = product.stock.split(":")
+        updated_stock = int(stock_list[index]) + int(item["number"])
+        stock_list[index] = str(updated_stock)
+        product.stock = ":".join(stock_list)
+        product.save()
+
         order.save()
         try:
-            return JsonResponse({"message": f"Order {order_id} cancelled successfully and refund initialised."}, status=200)
+            return JsonResponse({"message": f"Order {order_id} cancelled successfully and refund initiated."}, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     else:
-        return JsonResponse({"error":"refund failed"}, status=500)
+        return JsonResponse({"error": "refund failed"}, status=500)
+
 
         

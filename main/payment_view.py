@@ -83,7 +83,6 @@ def paymenthandler(request):
                     return JsonResponse({"message": "No items in the cart!"}, status=400)
 
                 for item in cart_items:
-                    # Prepare order details for each item
                     item_details = {
                         "name": item.item,
                         "price": item.price,
@@ -92,7 +91,6 @@ def paymenthandler(request):
                         "number": item.number
                     }
 
-                    # Update stock quantities
                     product = ProductDB.objects.get(id=item.product_id)
                     quantities = product.quantity.split(":")
                     stock_values = product.stock.split(":")
@@ -107,7 +105,6 @@ def paymenthandler(request):
                     product.stock = ":".join(stock_values)
                     product.save()
 
-                    # Create a separate order for each cart item
                     order = Order.objects.create(
                         user=user,
                         total_amount=item.price,
@@ -119,7 +116,6 @@ def paymenthandler(request):
 
                     order.save()
 
-                # Delete all cart items after processing
                 cart_items.delete()
 
                 return JsonResponse({"message": "Payment completed and orders placed successfully!"}, status=200)
