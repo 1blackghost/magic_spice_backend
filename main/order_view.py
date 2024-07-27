@@ -18,29 +18,30 @@ razorpay_client = razorpay.Client(
 
 @csrf_exempt
 def update_order_status(request, order_id,status):
-    if request.method == "GET":
-        new_status = status
-        if not new_status:
-            return JsonResponse({'error': 'No status provided'}, status=400)
-        
-        try:
-            user_id = request.session.get("admin")
-            if not user_id:
-                return JsonResponse({'error': 'User not authenticated'}, status=401)
-
-            order = get_object_or_404(Order, order_id=order_id)
-            order.order_status = new_status
-            order.save()
+    if "admin" in request.session:
+        if request.method == "GET":
+            new_status = status
+            if not new_status:
+                return JsonResponse({'error': 'No status provided'}, status=400)
             
-            return JsonResponse({'message': f'Order {order_id} status updated to {new_status}'}, status=200)
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-        except Order.DoesNotExist:
-            return JsonResponse({'error': 'Order not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+            try:
+                user_id = request.session.get("admin")
+                if not user_id:
+                    return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+                order = get_object_or_404(Order, order_id=order_id)
+                order.order_status = new_status
+                order.save()
+                
+                return JsonResponse({'message': f'Order {order_id} status updated to {new_status}'}, status=200)
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'User not found'}, status=404)
+            except Order.DoesNotExist:
+                return JsonResponse({'error': 'Order not found'}, status=404)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+        else:
+            return JsonResponse({'error': 'Invalid request method'}, status=405)
 def refund_payment(payment_id, amount_to_refund):
     try:
         refund_data = {
@@ -88,29 +89,31 @@ def user_orders(request):
 
 @csrf_exempt
 def all_orders(request):
-    if request.method == "GET":
-        try:
-            orders = Order.objects.all().order_by('-order_date')
-            orders_data = []
+    if "admin" in request.session:
 
-            for order in orders:
+        if request.method == "GET":
+            try:
+                orders = Order.objects.all().order_by('-order_date')
+                orders_data = []
 
-                order_data = {
-                    "order_id": order.order_id,
-                    "user": order.user.name,
-                    "order_date": order.order_date,
-                    "total_amount": order.total_amount,
-                    "items": order.items,
-                    "address":order.address,
-                    "order_status":order.order_status,
-                }
-                orders_data.append(order_data)
+                for order in orders:
 
-            return JsonResponse({"orders": orders_data}, safe=False, status=200)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+                    order_data = {
+                        "order_id": order.order_id,
+                        "user": order.user.name,
+                        "order_date": order.order_date,
+                        "total_amount": order.total_amount,
+                        "items": order.items,
+                        "address":order.address,
+                        "order_status":order.order_status,
+                    }
+                    orders_data.append(order_data)
+
+                return JsonResponse({"orders": orders_data}, safe=False, status=200)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+        else:
+            return JsonResponse({'error': 'Invalid request method'}, status=405)
     
 @csrf_exempt
 def cancel_order(request, order_id):
