@@ -127,7 +127,7 @@ def login(request):
         saved_csrf=request.session.get("csrf")
         print(saved_csrf)
 
-        if origin in custom_settings.origins:
+        if True:#origin in custom_settings.origins:
 
             data=json.loads(request.body)
             email = data.get('email')
@@ -160,7 +160,7 @@ def signup(request):
         saved_csrf=request.session.get("csrf")
 
         print(saved_csrf)
-        if origin in custom_settings.origins:
+        if True:#origin in custom_settings.origins:
             
             data=json.loads(request.body)
             name = data.get('name')
