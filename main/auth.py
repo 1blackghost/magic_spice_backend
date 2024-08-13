@@ -51,7 +51,7 @@ def verify(request, hash_value):
         return JsonResponse({"message": "Invalid verification link"}, status=400)
 
 def resend(request):
-    user_id = request.session.get("user_id")
+    user_id = request.session.get("temp_user_id")
     if not user_id:
         return JsonResponse({"message": "You're not logged in."}, status=400)
 
@@ -77,7 +77,7 @@ def resend(request):
         return JsonResponse({"message": "Verification not started"}, status=400)
 
 def unverified(request):
-    user_id = request.session.get("user_id")
+    user_id = request.session.get("temp_user_id")
     if not user_id:
         return JsonResponse({"message": "You're not logged in."}, status=400)
 
@@ -139,7 +139,7 @@ def login(request):
                         request.session["user_id"] = user.uid
                         return JsonResponse({"message": "success"}, status=200)
                     else:
-                        request.session["user_id"] = user.uid
+                        request.session["temp_user_id"] = user.uid
                         request.session["verification_started"] = True
                         request.session["email"] = user.email
                         return JsonResponse({"message": "verify"}, status=200)
