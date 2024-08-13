@@ -151,6 +151,14 @@ def login(request):
                 return JsonResponse({"message": "Something went wrong:("}, status=200)
         else:
             return JsonResponse({"message":"Forbidden"},status=403)
+import re
+
+def is_valid_email(email):
+    # Regular expression for validating an Email
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    
+    # Return whether the email matches the regex
+    return re.match(email_regex, email) is not None
 
 @csrf_exempt
 def signup(request):
@@ -168,6 +176,8 @@ def signup(request):
             password = data.get('password')
             
             additional_params = request.POST.get('additional_params')
+            if not is_valid_email(email):
+                return JsonResponse({"message": "Something went wrong:("}, status=200)
             try:
                 new_user = User(name=name, email=email, password=make_password(password), additional_params=additional_params)
                 new_user.save()
