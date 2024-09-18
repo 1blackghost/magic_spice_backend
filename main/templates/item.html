@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>UNIVERSE</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Gugi&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="/static/main.js"></script>
+    </head>
+    
+    <body class="overflow-x-hidden">
+        <style>
+            body,html{
+                margin: 0;
+                font-family: 'Dela Gothic One', sans-serif;
+                
+            }
+            ::-webkit-scrollbar{
+                background-color: white;
+                width: 10px;
+            }
+            ::-webkit-scrollbar-thumb{
+                background-color: black;
+                border-radius: 100px;
+            }
+        </style>
+        <div class="w-svw box-border h-fit flex flex-col" style=" font-family: 'Raleway', sans-serif;">
+            <nav class="w-smv h-20 overflow-hidden flex justify-between box-border px-5 md:px-10"> 
+                <!-- options -->
+                <div id="bar" class="w-80 duration-500 h-screen bg-white shadow-2xl fixed left-0 box-border z-40 pt-24 text-center -translate-x-full">
+                    <a style="font-family: 'Dela Gothic One', sans-serif;" class="font-thin">Home</a>
+                </div>
+                <!-- options -->
+                <button class="w-8 z-50 h-5 flex flex-col justify-between my-auto" onclick="sidebar()">
+                    <span id="bar1" class="w-full block h-1 bg-black rounded-full duration-500"></span>
+                    <span id="bar2" class="w-full block h-1 bg-black rounded-full duration-500"></span>
+                    <span id="bar3" class="w-full block h-1 bg-black rounded-full duration-500"></span>
+                </button>
+                <h1 style="font-family: 'Gugi', sans-serif;" class="my-auto uppercase text-2xl">universe</h1>
+                <div class="flex w-fit justify-between">
+                    <button class="w-fit my-auto flex overflow-hidden  rounded-full px-0 py-1"><img src="/static/images/search.png" class="w-6 my-auto mr-0 opacity-1"></button>
+                    <button class="w-7 my-auto relative mx-5">
+                        <img src="/static/images/cart.png">
+                        <div class="w-4 h-4 bg-black font-bold text-white leading-tight text-[12px] rounded-full font-sans absolute -top-2 -right-2">0</div>
+                    </button>
+                    <button class="w-6 y-auto"><img src="/static/images/user.png"></button>
+                </div>
+            </nav>
+            <div class="flex mt-10 mx-auto">
+                <div class="flex flex-col ml-8">
+                    <img src="/static/images/t-shirt.jpg" class="h-[600px] w-[600px] object-cover rounded-lg">
+                    <div class="w-full h-32 flex gap-4 py-4">
+                        <img src="/static/images/t-shirt.jpg" class="w-32 object-cover rounded"/>
+                        <img src="/static/images/casual.jpg" class="w-32 object-cover rounded"/>
+                        <img src="/static/images/cargo.jpg" class="w-32 object-cover rounded"/>
+                    </div>
+                </div>
+                <div class="flex flex-col h-fit ml-12">
+                    <h1 class="uppercase text-3xl text-left">lorem ipsum</h1>
+                    <h4 class="flex text-xl font-bold my-10">Rs.300 <p class="line-through ml-12">Rs.600</p></h4>
+                    <div>
+                        <label for="size">Size </label>
+                    <select name="size" class="border-[1px] border-gray-700 p-2 w-96 outline-0">
+                        <option class="border-[1px] bg-white active:bg-white">Medium</option>
+                        <option class="border-[1px] bg-white">Large</option>
+                        <option class="border-[1px] bg-white">Extra-Large</option>
+                    </select>
+                    </div>
+                    <div class="w-fit flex my-auto mr-2 mt-5 gap-2">
+                        Color 
+                        <div class="w-6 h-6 rounded-full bg-gray-900"></div>
+                        <div class="w-6 h-6 rounded-full bg-gray-600"></div>
+                        <div class="w-6 h-6 rounded-full bg-gray-300 "></div>
+                    </div>
+                    <button class="w-full h-12 bg-white rounded text-black border-2 border-black font-semibold my-10">Add to cart</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>

@@ -46,7 +46,7 @@ def verify(request, hash_value):
         Cart.objects.create(user=user)
 
 
-        return render(request, 'index.html')
+        return render(request, 'done.html')
     except Verify_Email.DoesNotExist:
         return JsonResponse({"message": "Invalid verification link"}, status=400)
 
