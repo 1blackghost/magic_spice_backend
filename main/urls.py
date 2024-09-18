@@ -20,6 +20,7 @@ from django.urls import path,include
 from . import auth,cart_view,payment_view,order_view
 
 urlpatterns = [
+    path("",auth.index,name="index"),
     path('get_csrf', auth.get_csrf, name='get_csrf'),
     path('verify/<str:hash_value>', auth.verify, name='verify'),
     path('resend', auth.resend, name='resend'),

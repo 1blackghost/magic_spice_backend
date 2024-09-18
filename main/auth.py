@@ -188,3 +188,5 @@ def signup(request):
                 return JsonResponse({"message": "Something went wrong:("}, status=200)
         else:
             return JsonResponse({"message":"Forbidden"},status=403)
+def index(request):
+    return render(request, 'index.html')
