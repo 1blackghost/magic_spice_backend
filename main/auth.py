@@ -151,6 +151,8 @@ def login(request):
                 return JsonResponse({"message": "Something went wrong:("}, status=200)
         else:
             return JsonResponse({"message":"Forbidden"},status=403)
+    else:
+        return render(request, 'index.html')
 import re
 
 def is_valid_email(email):
